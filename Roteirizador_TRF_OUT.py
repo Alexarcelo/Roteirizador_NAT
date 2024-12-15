@@ -5,9 +5,11 @@ import pandas as pd
 from datetime import timedelta, time, datetime
 from itertools import combinations
 from collections import Counter
-from google.oauth2 import service_account
 import gspread 
 import requests
+from google.cloud import secretmanager 
+import json
+from google.oauth2.service_account import Credentials
 
 def gerar_df_phoenix(vw_name, base_luck):
     
