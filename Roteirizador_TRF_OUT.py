@@ -5805,3 +5805,7 @@ if servico_roteiro and data_roteiro:
                 st.error(f"Erro. Favor contactar o suporte")
 
                 st.error(f"{response}")
+
+        else:
+
+            st.error(f'Não existem roteiros feitos para a data e serviços selecionados')
