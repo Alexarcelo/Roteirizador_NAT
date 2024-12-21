@@ -4467,9 +4467,21 @@ def ajustar_data_execucao_voos_internacionais_madrugada():
 
     st.session_state.df_router.loc[mask_voos_inter_madrugada, 'Data Execucao'] = st.session_state.df_router['Data Execucao'] - timedelta(days=1)
 
+def verificar_voos_undefined():
+
+    if len(st.session_state.df_router[st.session_state.df_router['Horario Voo']=='undefined']['Voo'].unique())>0:
+
+        nome_voos_undefined = ', '.join(st.session_state.df_router[st.session_state.df_router['Horario Voo']=='undefined']['Voo'].unique())
+
+        st.error(f'Os voos {nome_voos_undefined} foram cadastrados com horário vazio para alguma data específica. Por favor, entre nos cadastros deles, elimine essas agendas com horário vazio, comunique Thiago e tente novamente')
+
+        st.stop()
+        
 def puxar_dados_phoenix():
 
     st.session_state.df_router = gerar_df_phoenix('vw_router', 'test_phoenix_natal')
+
+    verificar_voos_undefined()
 
     dict_nomes_servicos = {'OUT Touros - hotéis Parceiros': 'OUT - Touros', 'OUT Natal - Hotéis Parceiros ': 'OUT - Natal', 
                             'OUT Pipa - Hotéis Parceiros': 'OUT - Pipa', 'Black - OUT Natal': 'OUT - Natal'}
