@@ -10,6 +10,7 @@ import requests
 from google.cloud import secretmanager 
 import json
 from google.oauth2.service_account import Credentials
+from google.oauth2 import service_account
 
 def gerar_df_phoenix(vw_name, base_luck):
     
@@ -62,25 +63,14 @@ def gerar_df_phoenix(vw_name, base_luck):
 
 def puxar_sequencias_hoteis(id_gsheet, lista_abas, lista_nomes_df_hoteis):
 
-    # GCP projeto onde está a chave credencial
     project_id = "grupoluck"
-
-    # ID da chave credencial do google.
     secret_id = "cred-luck-aracaju"
-
-    # Cria o cliente.
     secret_client = secretmanager.SecretManagerServiceClient()
-
     secret_name = f"projects/{project_id}/secrets/{secret_id}/versions/latest"
     response = secret_client.access_secret_version(request={"name": secret_name})
-
     secret_payload = response.payload.data.decode("UTF-8")
-
     credentials_info = json.loads(secret_payload)
-
     scopes = ["https://www.googleapis.com/auth/spreadsheets"]
-
-    # Use the credentials to authorize the gspread client
     credentials = Credentials.from_service_account_info(credentials_info, scopes=scopes)
     client = gspread.authorize(credentials)
 
@@ -160,25 +150,14 @@ def inserir_hoteis_faltantes(itens_faltantes, df_hoteis, aba_excel, regiao):
 
     # df_hoteis_geral = pd.concat([df_hoteis, df_itens_faltantes], ignore_index=True)
 
-    # GCP projeto onde está a chave credencial
     project_id = "grupoluck"
-
-    # ID da chave credencial do google.
     secret_id = "cred-luck-aracaju"
-
-    # Cria o cliente.
     secret_client = secretmanager.SecretManagerServiceClient()
-
     secret_name = f"projects/{project_id}/secrets/{secret_id}/versions/latest"
     response = secret_client.access_secret_version(request={"name": secret_name})
-
     secret_payload = response.payload.data.decode("UTF-8")
-
     credentials_info = json.loads(secret_payload)
-
     scopes = ["https://www.googleapis.com/auth/spreadsheets"]
-
-    # Use the credentials to authorize the gspread client
     credentials = Credentials.from_service_account_info(credentials_info, scopes=scopes)
     client = gspread.authorize(credentials)
     
@@ -3137,6 +3116,8 @@ def plotar_roteiros_gerais_alternativos_com_apoio(df_servicos, df_apoios, df_alt
 
             df_ref_1 = df_alternativos[df_alternativos['Roteiro']==item].reset_index(drop=True)
 
+            coluna = plotar_divisao_de_rotas(coluna, row3)
+
             horario_inicial_voo = df_ref_1['Horario Voo'].min()
 
             horario_final_voo = df_ref_1['Horario Voo'].max()
@@ -3274,6 +3255,8 @@ def plotar_roteiros_gerais_alternativos_com_apoio(df_servicos, df_apoios, df_alt
         if item in  df_alternativos_2['Roteiro'].unique().tolist():
 
             df_ref_1 = df_alternativos_2[df_alternativos_2['Roteiro']==item].reset_index(drop=True)
+
+            coluna = plotar_divisao_de_rotas(coluna, row3)
 
             horario_inicial_voo = df_ref_1['Horario Voo'].min()
 
@@ -3413,6 +3396,8 @@ def plotar_roteiros_gerais_alternativos_com_apoio(df_servicos, df_apoios, df_alt
 
             df_ref_1 = df_alternativos_3[df_alternativos_3['Roteiro']==item].reset_index(drop=True)
 
+            coluna = plotar_divisao_de_rotas(coluna, row3)
+
             horario_inicial_voo = df_ref_1['Horario Voo'].min()
 
             horario_final_voo = df_ref_1['Horario Voo'].max()
@@ -3550,6 +3535,8 @@ def plotar_roteiros_gerais_alternativos_com_apoio(df_servicos, df_apoios, df_alt
         if item in  df_alternativos_4['Roteiro'].unique().tolist():
 
             df_ref_1 = df_alternativos_4[df_alternativos_4['Roteiro']==item].reset_index(drop=True)
+
+            coluna = plotar_divisao_de_rotas(coluna, row3)
 
             horario_inicial_voo = df_ref_1['Horario Voo'].min()
 
@@ -3689,6 +3676,8 @@ def plotar_roteiros_gerais_alternativos_com_apoio(df_servicos, df_apoios, df_alt
 
             df_ref_1 = df_alternativos_5[df_alternativos_5['Roteiro']==item].reset_index(drop=True)
 
+            coluna = plotar_divisao_de_rotas(coluna, row3)
+
             horario_inicial_voo = df_ref_1['Horario Voo'].min()
 
             horario_final_voo = df_ref_1['Horario Voo'].max()
@@ -3717,7 +3706,7 @@ def plotar_roteiros_gerais_alternativos_com_apoio(df_servicos, df_apoios, df_alt
 
                 if modo=='REGULAR':
 
-                    titulo_roteiro = f'Opção Alternativa 4 | Roteiro {item}'
+                    titulo_roteiro = f'Opção Alternativa 5 | Roteiro {item}'
 
                     titulo_carro = f'Veículo {carro}'
 
@@ -3727,7 +3716,7 @@ def plotar_roteiros_gerais_alternativos_com_apoio(df_servicos, df_apoios, df_alt
 
                     reserva = df_ref_2.at[0, 'Reserva']
 
-                    titulo_roteiro = f'Opção Alternativa 4 | Roteiro {item}'
+                    titulo_roteiro = f'Opção Alternativa 5 | Roteiro {item}'
 
                     titulo_carro = f'Veículo {carro}'
 
@@ -3788,7 +3777,7 @@ def plotar_roteiros_gerais_alternativos_com_apoio(df_servicos, df_apoios, df_alt
 
                         paxs_total = int(df_ref_apoio_2['Total ADT | CHD'].sum())
 
-                        titulo_roteiro = f'Apoio | Opção Alternativa 4 | Roteiro {item}'
+                        titulo_roteiro = f'Apoio | Opção Alternativa 5 | Roteiro {item}'
 
                         titulo_carro_principal = f'Veículo Principal {carro}'
 
@@ -3822,6 +3811,8 @@ def plotar_roteiros_gerais_alternativos_com_apoio(df_servicos, df_apoios, df_alt
                             else:
 
                                 coluna+=1
+
+        coluna = plotar_divisao_de_rotas(coluna, row3)
 
     return coluna
 
@@ -4716,25 +4707,14 @@ def verificar_preenchimento_df_hoteis(df_hoteis_ref):
 
 def puxar_historico(id_gsheet, lista_abas, lista_nomes_df_hoteis):
 
-    # GCP projeto onde está a chave credencial
     project_id = "grupoluck"
-
-    # ID da chave credencial do google.
     secret_id = "cred-luck-aracaju"
-
-    # Cria o cliente.
     secret_client = secretmanager.SecretManagerServiceClient()
-
     secret_name = f"projects/{project_id}/secrets/{secret_id}/versions/latest"
     response = secret_client.access_secret_version(request={"name": secret_name})
-
     secret_payload = response.payload.data.decode("UTF-8")
-
     credentials_info = json.loads(secret_payload)
-
     scopes = ["https://www.googleapis.com/auth/spreadsheets"]
-
-    # Use the credentials to authorize the gspread client
     credentials = Credentials.from_service_account_info(credentials_info, scopes=scopes)
     client = gspread.authorize(credentials)
 
@@ -4753,26 +4733,15 @@ def puxar_historico(id_gsheet, lista_abas, lista_nomes_df_hoteis):
         st.session_state[df_hotel] = pd.DataFrame(sheet_data[1:], columns=sheet_data[0])
 
 def inserir_df_rotas_geradas(aba_excel, df_insercao):
-    # Credenciais do Google Sheets
-    # GCP projeto onde está a chave credencial
+    
     project_id = "grupoluck"
-
-    # ID da chave credencial do google.
     secret_id = "cred-luck-aracaju"
-
-    # Cria o cliente.
     secret_client = secretmanager.SecretManagerServiceClient()
-
     secret_name = f"projects/{project_id}/secrets/{secret_id}/versions/latest"
     response = secret_client.access_secret_version(request={"name": secret_name})
-
     secret_payload = response.payload.data.decode("UTF-8")
-
     credentials_info = json.loads(secret_payload)
-
     scopes = ["https://www.googleapis.com/auth/spreadsheets"]
-
-    # Use the credentials to authorize the gspread client
     credentials = Credentials.from_service_account_info(credentials_info, scopes=scopes)
     client = gspread.authorize(credentials)
     
@@ -4810,7 +4779,67 @@ def salvar_rotas_historico(df_pdf):
     st.session_state.df_historico_roteiros = pd.concat([st.session_state.df_historico_roteiros, df_pdf], ignore_index=True)
 
     inserir_df_rotas_geradas('Histórico Roteiros', st.session_state.df_historico_roteiros)
-    
+
+def plotar_divisao_de_rotas(coluna, row3):
+
+    if coluna==0:
+
+        with row3[0]:
+
+            container_ref = st.container(border=True, height=500)
+
+        with row3[1]:
+
+            container_ref = st.container(border=True, height=500)
+
+        with row3[2]:
+
+            container_ref = st.container(border=True, height=500)
+
+    elif coluna==1:
+
+        with row3[1]:
+
+            container_ref = st.container(border=True, height=500)
+
+        with row3[2]:
+
+            container_ref = st.container(border=True, height=500)
+
+        with row3[0]:
+
+            container_ref = st.container(border=True, height=500)
+
+        with row3[1]:
+
+            container_ref = st.container(border=True, height=500)
+
+        with row3[2]:
+
+            container_ref = st.container(border=True, height=500)
+
+    elif coluna==2:
+
+        with row3[2]:
+
+            container_ref = st.container(border=True, height=500)
+
+        with row3[0]:
+
+            container_ref = st.container(border=True, height=500)
+
+        with row3[1]:
+
+            container_ref = st.container(border=True, height=500)
+
+        with row3[2]:
+
+            container_ref = st.container(border=True, height=500)
+
+    coluna=0
+
+    return coluna
+
 st.set_page_config(layout='wide')
 
 st.title('Roteirizador de Transfer Out - Natal')
@@ -4833,7 +4862,9 @@ if not 'df_user' in st.session_state:
 
 if not 'df_router' in st.session_state:
 
-    puxar_dados_phoenix()
+    with st.spinner('Puxando dados do Phoenix...'):
+
+        puxar_dados_phoenix()
 
 if 'df_juncao_voos' not in st.session_state:
 
@@ -4863,7 +4894,9 @@ with row2[0]:
 
     if atualizar_phoenix:
 
-        puxar_dados_phoenix()
+        with st.spinner('Puxando dados do Phoenix...'):
+
+            puxar_dados_phoenix()
 
         if 'df_servico_voos_horarios' in st.session_state:
             
@@ -5191,332 +5224,336 @@ if servico_roteiro and 'df_horario_esp_ultimo_hotel' in st.session_state:
 
 if roteirizar:
 
-    puxar_sequencias_hoteis('1ch1NfOKeK008ZeqexQTzOqXuCZ2Q6sL8hY2sPqQegLQ', 
-                            ['Hoteis Natal', 'Hoteis Pipa', 'Hoteis Touros', 'Hoteis Sao Miguel', 'Hoteis Galinhos', 'Hoteis Camurupim', 'Hoteis Genipabu', 
-                             'Hoteis Pirangi', 'Hoteis Baia Formosa', 'Hoteis Passeio Litoral Norte'], 
-                             ['df_natal', 'df_pipa', 'df_touros', 'df_sao_miguel', 'df_galinhos', 'df_camurupim', 'df_genipabu', 'df_pirangi', 'df_baia_formosa', 'df_ln'])
+    with st.spinner('Puxando sequências de hoteis...'):
 
-    st.session_state.dict_regioes_hoteis = \
-        {'OUT - Natal': ['df_natal', 'Natal', 'Hoteis Natal', 'Natal'], 
-         'OUT - Pipa': ['df_pipa', 'Pipa', 'Hoteis Pipa', 'Pipa'], 
-         'OUT - Touros': ['df_touros', 'Touros', 'Hoteis Touros', 'Touros'], 
-         'OUT - São Miguel Gostoso': ['df_sao_miguel', 'Sao Miguel', 'Hoteis Sao Miguel', 'São Miguel'], 
-         'Out - Galinhos': ['df_galinhos', 'Galinhos', 'Hoteis Galinhos', 'Galinhos'], 
-         'OUT - Camurupim': ['df_camurupim', 'Camurupim', 'Hoteis Camurupim', 'Camurupim'], 
-         'Out - Genipabu': ['df_genipabu', 'Genipabu', 'Hoteis Genipabu', 'Genipabu'], 
-         'OUT - Pirangi': ['df_pirangi', 'Pirangi', 'Hoteis Pirangi', 'Pirangi'], 
-         'OUT - Baia Formosa': ['df_baia_formosa', 'Baia Formosa', 'Hoteis Baia Formosa', 'Baia Formosa']}
-
-    nome_df_hotel = st.session_state.dict_regioes_hoteis[servico_roteiro][0]
-
-    nome_html_ref = st.session_state.dict_regioes_hoteis[servico_roteiro][1]
-
-    nome_aba_excel = st.session_state.dict_regioes_hoteis[servico_roteiro][2]
-
-    nome_regiao = st.session_state.dict_regioes_hoteis[servico_roteiro][3]
-
-    df_hoteis_ref = st.session_state[nome_df_hotel]
-
-    verificar_preenchimento_df_hoteis(df_hoteis_ref)
-
-    # Filtrando apenas data especificada, OUTs e Status do Serviço diferente de 'CANCELADO' e retirando os hoteis de piedade pra fazer o roteiro em separado
-
-    if servico_roteiro!='OUT - Natal':
-
-        df_router_filtrado = st.session_state.df_router[(st.session_state.df_router['Data Execucao']==data_roteiro) & 
-                                                        (st.session_state.df_router['Tipo de Servico']=='OUT') &  
-                                                        (st.session_state.df_router['Status do Servico']!='CANCELADO') & 
-                                                        (st.session_state.df_router['Servico']==servico_roteiro) & 
-                                                        ~(st.session_state.df_router['Voo'].isin(voos_nao_operantes))].reset_index(drop=True)
+        puxar_sequencias_hoteis('1ch1NfOKeK008ZeqexQTzOqXuCZ2Q6sL8hY2sPqQegLQ', 
+                                ['Hoteis Natal', 'Hoteis Pipa', 'Hoteis Touros', 'Hoteis Sao Miguel', 'Hoteis Galinhos', 'Hoteis Camurupim', 'Hoteis Genipabu', 
+                                'Hoteis Pirangi', 'Hoteis Baia Formosa', 'Hoteis Passeio Litoral Norte'], 
+                                ['df_natal', 'df_pipa', 'df_touros', 'df_sao_miguel', 'df_galinhos', 'df_camurupim', 'df_genipabu', 'df_pirangi', 'df_baia_formosa', 'df_ln'])
         
-    else:
+    with st.spinner('Gerando roteiros...'):
 
-        df_router_filtrado = st.session_state.df_router[(st.session_state.df_router['Data Execucao']==data_roteiro) & 
-                                                        (st.session_state.df_router['Tipo de Servico']=='OUT') &  
-                                                        (st.session_state.df_router['Status do Servico']!='CANCELADO') & 
-                                                        ((st.session_state.df_router['Servico']==servico_roteiro) | 
-                                                         (st.session_state.df_router['Servico']=='OUT - Camurupim')) & 
-                                                        ~(st.session_state.df_router['Voo'].isin(voos_nao_operantes))].reset_index(drop=True)
+        st.session_state.dict_regioes_hoteis = \
+            {'OUT - Natal': ['df_natal', 'Natal', 'Hoteis Natal', 'Natal'], 
+            'OUT - Pipa': ['df_pipa', 'Pipa', 'Hoteis Pipa', 'Pipa'], 
+            'OUT - Touros': ['df_touros', 'Touros', 'Hoteis Touros', 'Touros'], 
+            'OUT - São Miguel Gostoso': ['df_sao_miguel', 'Sao Miguel', 'Hoteis Sao Miguel', 'São Miguel'], 
+            'Out - Galinhos': ['df_galinhos', 'Galinhos', 'Hoteis Galinhos', 'Galinhos'], 
+            'OUT - Camurupim': ['df_camurupim', 'Camurupim', 'Hoteis Camurupim', 'Camurupim'], 
+            'Out - Genipabu': ['df_genipabu', 'Genipabu', 'Hoteis Genipabu', 'Genipabu'], 
+            'OUT - Pirangi': ['df_pirangi', 'Pirangi', 'Hoteis Pirangi', 'Pirangi'], 
+            'OUT - Baia Formosa': ['df_baia_formosa', 'Baia Formosa', 'Hoteis Baia Formosa', 'Baia Formosa']}
+
+        nome_df_hotel = st.session_state.dict_regioes_hoteis[servico_roteiro][0]
+
+        nome_html_ref = st.session_state.dict_regioes_hoteis[servico_roteiro][1]
+
+        nome_aba_excel = st.session_state.dict_regioes_hoteis[servico_roteiro][2]
+
+        nome_regiao = st.session_state.dict_regioes_hoteis[servico_roteiro][3]
+
+        df_hoteis_ref = st.session_state[nome_df_hotel]
+
+        verificar_preenchimento_df_hoteis(df_hoteis_ref)
+
+        # Filtrando apenas data especificada, OUTs e Status do Serviço diferente de 'CANCELADO' e retirando os hoteis de piedade pra fazer o roteiro em separado
+
+        if servico_roteiro!='OUT - Natal':
+
+            df_router_filtrado = st.session_state.df_router[(st.session_state.df_router['Data Execucao']==data_roteiro) & 
+                                                            (st.session_state.df_router['Tipo de Servico']=='OUT') &  
+                                                            (st.session_state.df_router['Status do Servico']!='CANCELADO') & 
+                                                            (st.session_state.df_router['Servico']==servico_roteiro) & 
+                                                            ~(st.session_state.df_router['Voo'].isin(voos_nao_operantes))].reset_index(drop=True)
+            
+        else:
+
+            df_router_filtrado = st.session_state.df_router[(st.session_state.df_router['Data Execucao']==data_roteiro) & 
+                                                            (st.session_state.df_router['Tipo de Servico']=='OUT') &  
+                                                            (st.session_state.df_router['Status do Servico']!='CANCELADO') & 
+                                                            ((st.session_state.df_router['Servico']==servico_roteiro) | 
+                                                            (st.session_state.df_router['Servico']=='OUT - Camurupim')) & 
+                                                            ~(st.session_state.df_router['Voo'].isin(voos_nao_operantes))].reset_index(drop=True)
+            
+            df_router_filtrado['Servico']='OUT - Natal'
+            
+            sequencia_marsol = df_hoteis_ref.loc[df_hoteis_ref['Est Origem'] == 'Marsol Beach Resort', 'Sequência'].values[0]
+
+        # Categorizando serviços com 'CADEIRANTE' na observação
         
-        df_router_filtrado['Servico']='OUT - Natal'
+        df_router_filtrado['Modo do Servico'] = df_router_filtrado.apply(
+            lambda row: 'CADEIRANTE' if verificar_cadeirante(row['Observacao']) else row['Modo do Servico'], axis=1)
         
-        sequencia_marsol = df_hoteis_ref.loc[df_hoteis_ref['Est Origem'] == 'Marsol Beach Resort', 'Sequência'].values[0]
+        # Excluindo linhas onde exite 'CLD' na observação
 
-    # Categorizando serviços com 'CADEIRANTE' na observação
+        df_router_filtrado = df_router_filtrado[~df_router_filtrado['Observacao'].str.upper().str.contains('CLD', na=False)]
+
+        if len(df_router_filtrado)==0:
+        
+            st.error('Depois de filtrar as reservas com CLD na observação não sobraram serviços para roteirizar.')
+
+            st.stop()
+        
+        # Verificando se todos os hoteis estão na lista da sequência
     
-    df_router_filtrado['Modo do Servico'] = df_router_filtrado.apply(
-        lambda row: 'CADEIRANTE' if verificar_cadeirante(row['Observacao']) else row['Modo do Servico'], axis=1)
-    
-    # Excluindo linhas onde exite 'CLD' na observação
+        itens_faltantes, lista_hoteis_df_router = gerar_itens_faltantes(df_router_filtrado, df_hoteis_ref)
 
-    df_router_filtrado = df_router_filtrado[~df_router_filtrado['Observacao'].str.upper().str.contains('CLD', na=False)]
+        itens_faltantes_passeios, lista_hoteis_df_router_passeios = gerar_itens_faltantes(df_router_filtrado, st.session_state.df_ln)
 
-    if len(df_router_filtrado)==0:
-    
-        st.error('Depois de filtrar as reservas com CLD na observação não sobraram serviços para roteirizar.')
+        pax_max_utilitario = 4
 
-        st.stop()
-    
-    # Verificando se todos os hoteis estão na lista da sequência
- 
-    itens_faltantes, lista_hoteis_df_router = gerar_itens_faltantes(df_router_filtrado, df_hoteis_ref)
+        pax_max_van = 18
 
-    itens_faltantes_passeios, lista_hoteis_df_router_passeios = gerar_itens_faltantes(df_router_filtrado, st.session_state.df_ln)
+        pax_max_micro = 25
 
-    pax_max_utilitario = 4
+        if (servico_roteiro=='OUT - Natal' and len(itens_faltantes)==0 and len(itens_faltantes_passeios)==0) or (servico_roteiro!='OUT - Natal' and len(itens_faltantes)==0):
 
-    pax_max_van = 18
+            # Mensagens de andamento do script informando como foi a verificação dos hoteis cadastrados
 
-    pax_max_micro = 25
+            st.success('Todos os hoteis estão cadastrados na lista de sequência de hoteis')
 
-    if (servico_roteiro=='OUT - Natal' and len(itens_faltantes)==0 and len(itens_faltantes_passeios)==0) or (servico_roteiro!='OUT - Natal' and len(itens_faltantes)==0):
+            df_router_filtrado_2 = criar_df_servicos_2(df_router_filtrado, st.session_state.df_juncao_voos, df_hoteis_ref)
 
-        # Mensagens de andamento do script informando como foi a verificação dos hoteis cadastrados
+            # Inserir coluna com horários específicos de junções/voos
 
-        st.success('Todos os hoteis estão cadastrados na lista de sequência de hoteis')
+            df_router_filtrado_2 = inserir_coluna_horario_ultimo_hotel(df_router_filtrado_2)
 
-        df_router_filtrado_2 = criar_df_servicos_2(df_router_filtrado, st.session_state.df_juncao_voos, df_hoteis_ref)
+            roteiro = 0
 
-        # Inserir coluna com horários específicos de junções/voos
+            df_router_filtrado_2['Horario Voo'] = pd.to_datetime(df_router_filtrado_2['Horario Voo'], format='%H:%M:%S').dt.time
 
-        df_router_filtrado_2 = inserir_coluna_horario_ultimo_hotel(df_router_filtrado_2)
+            # Criando dataframe que vai receber os hoteis que tem mais paxs que a capacidade máxima da frota
 
-        roteiro = 0
+            lista_colunas = ['index']
 
-        df_router_filtrado_2['Horario Voo'] = pd.to_datetime(df_router_filtrado_2['Horario Voo'], format='%H:%M:%S').dt.time
+            df_hoteis_pax_max = pd.DataFrame(columns=lista_colunas.extend(df_router_filtrado_2.columns.tolist()))
 
-        # Criando dataframe que vai receber os hoteis que tem mais paxs que a capacidade máxima da frota
+            # Roteirizando hoteis que podem receber ônibus com mais paxs que a capacidade máxima da frota
 
-        lista_colunas = ['index']
+            df_router_filtrado_2, df_hoteis_pax_max, roteiro = \
+                roteirizar_hoteis_mais_pax_max(df_router_filtrado_2, roteiro, df_hoteis_pax_max)
 
-        df_hoteis_pax_max = pd.DataFrame(columns=lista_colunas.extend(df_router_filtrado_2.columns.tolist()))
+            # Gerando horários de apresentação
 
-        # Roteirizando hoteis que podem receber ônibus com mais paxs que a capacidade máxima da frota
+            df_router_filtrado_2, roteiro = gerar_horarios_apresentacao(df_router_filtrado_2, roteiro, st.session_state.max_hoteis)
 
-        df_router_filtrado_2, df_hoteis_pax_max, roteiro = \
-            roteirizar_hoteis_mais_pax_max(df_router_filtrado_2, roteiro, df_hoteis_pax_max)
+        else:
 
-        # Gerando horários de apresentação
+            inserir_hoteis_faltantes(itens_faltantes, df_hoteis_ref, nome_aba_excel, nome_regiao)
 
-        df_router_filtrado_2, roteiro = gerar_horarios_apresentacao(df_router_filtrado_2, roteiro, st.session_state.max_hoteis)
+            if servico_roteiro=='OUT - Natal' and len(itens_faltantes_passeios)!=0:
 
-    else:
+                inserir_hoteis_faltantes(itens_faltantes_passeios, st.session_state.df_ln, 'Hoteis Passeio Litoral Norte', 'Passeios Litoral Norte')
 
-        inserir_hoteis_faltantes(itens_faltantes, df_hoteis_ref, nome_aba_excel, nome_regiao)
+            st.stop()
 
-        if servico_roteiro=='OUT - Natal' and len(itens_faltantes_passeios)!=0:
+        df_router_filtrado_2 = recalcular_horarios_menor_horario(df_router_filtrado_2)
 
-            inserir_hoteis_faltantes(itens_faltantes_passeios, st.session_state.df_ln, 'Hoteis Passeio Litoral Norte', 'Passeios Litoral Norte')
+        df_router_filtrado_2 = roteirizar_natal_maioria_praia_dos_artistas(df_router_filtrado_2)
 
-        st.stop()
+        # Identificando serviços das rotas primárias que vão precisar de apoios
 
-    df_router_filtrado_2 = recalcular_horarios_menor_horario(df_router_filtrado_2)
+        df_router_filtrado_2 = identificar_apoios_em_df(df_router_filtrado_2, pax_max_utilitario, pax_max_van, pax_max_micro)
 
-    df_router_filtrado_2 = roteirizar_natal_maioria_praia_dos_artistas(df_router_filtrado_2)
+        # Gerando rotas de apoios de rotas primárias
 
-    # Identificando serviços das rotas primárias que vão precisar de apoios
+        df_router_filtrado_2, df_roteiros_apoios = gerar_roteiros_apoio(df_router_filtrado_2)
 
-    df_router_filtrado_2 = identificar_apoios_em_df(df_router_filtrado_2, pax_max_utilitario, pax_max_van, pax_max_micro)
+        # Roteirizando carro principal desconsiderando os hoteis do apoio
 
-    # Gerando rotas de apoios de rotas primárias
+        df_router_filtrado_2 = roteirizar_pos_apoios(df_roteiros_apoios, df_router_filtrado_2)
 
-    df_router_filtrado_2, df_roteiros_apoios = gerar_roteiros_apoio(df_router_filtrado_2)
+        # Gerando roteiros alternativos
 
-    # Roteirizando carro principal desconsiderando os hoteis do apoio
+        df_roteiros_alternativos = gerar_roteiros_alternativos(df_router_filtrado_2)
 
-    df_router_filtrado_2 = roteirizar_pos_apoios(df_roteiros_apoios, df_router_filtrado_2)
+        df_roteiros_alternativos = recalcular_horarios_menor_horario(df_roteiros_alternativos)
 
-    # Gerando roteiros alternativos
+        df_roteiros_alternativos = roteirizar_natal_maioria_praia_dos_artistas(df_roteiros_alternativos)
 
-    df_roteiros_alternativos = gerar_roteiros_alternativos(df_router_filtrado_2)
+        # Gerando roteiros alternativos 2
 
-    df_roteiros_alternativos = recalcular_horarios_menor_horario(df_roteiros_alternativos)
+        max_hoteis_2 = 10
 
-    df_roteiros_alternativos = roteirizar_natal_maioria_praia_dos_artistas(df_roteiros_alternativos)
+        max_hoteis_4 = 16
 
-    # Gerando roteiros alternativos 2
+        intervalo_pu_hotel_2 = pd.Timedelta(hours=1)
 
-    max_hoteis_2 = 10
+        df_roteiros_alternativos_2 = gerar_roteiros_alternativos_2(df_router_filtrado_2, max_hoteis_2, intervalo_pu_hotel_2)
 
-    max_hoteis_4 = 16
+        df_roteiros_alternativos_2 = recalcular_horarios_menor_horario(df_roteiros_alternativos_2)
 
-    intervalo_pu_hotel_2 = pd.Timedelta(hours=1)
+        df_roteiros_alternativos_2 = roteirizar_natal_maioria_praia_dos_artistas(df_roteiros_alternativos_2)
 
-    df_roteiros_alternativos_2 = gerar_roteiros_alternativos_2(df_router_filtrado_2, max_hoteis_2, intervalo_pu_hotel_2)
+        df_roteiros_alternativos_3 = gerar_roteiros_alternativos_3(df_router_filtrado_2)
 
-    df_roteiros_alternativos_2 = recalcular_horarios_menor_horario(df_roteiros_alternativos_2)
+        df_roteiros_alternativos_3 = recalcular_horarios_menor_horario(df_roteiros_alternativos_3)
 
-    df_roteiros_alternativos_2 = roteirizar_natal_maioria_praia_dos_artistas(df_roteiros_alternativos_2)
+        df_roteiros_alternativos_3 = roteirizar_natal_maioria_praia_dos_artistas(df_roteiros_alternativos_3)
 
-    df_roteiros_alternativos_3 = gerar_roteiros_alternativos_3(df_router_filtrado_2)
+        df_roteiros_alternativos_4 = gerar_roteiros_alternativos_4(df_router_filtrado_2, max_hoteis_4)
 
-    df_roteiros_alternativos_3 = recalcular_horarios_menor_horario(df_roteiros_alternativos_3)
+        df_roteiros_alternativos_4 = recalcular_horarios_menor_horario(df_roteiros_alternativos_4)
 
-    df_roteiros_alternativos_3 = roteirizar_natal_maioria_praia_dos_artistas(df_roteiros_alternativos_3)
+        df_roteiros_alternativos_4 = roteirizar_natal_maioria_praia_dos_artistas(df_roteiros_alternativos_4)
 
-    df_roteiros_alternativos_4 = gerar_roteiros_alternativos_4(df_router_filtrado_2, max_hoteis_4)
+        df_roteiros_alternativos_5 = gerar_roteiros_alternativos_5(df_router_filtrado_2, pax_max_utilitario, pax_max_van, pax_max_micro, max_hoteis_2)
 
-    df_roteiros_alternativos_4 = recalcular_horarios_menor_horario(df_roteiros_alternativos_4)
+        df_roteiros_alternativos_5 = recalcular_horarios_menor_horario(df_roteiros_alternativos_5)
 
-    df_roteiros_alternativos_4 = roteirizar_natal_maioria_praia_dos_artistas(df_roteiros_alternativos_4)
+        df_roteiros_alternativos_5 = roteirizar_natal_maioria_praia_dos_artistas(df_roteiros_alternativos_5)
+        
+        # Identificando serviços das rotas alternativas que vão precisar de apoios
 
-    df_roteiros_alternativos_5 = gerar_roteiros_alternativos_5(df_router_filtrado_2, pax_max_utilitario, pax_max_van, pax_max_micro, max_hoteis_2)
+        df_roteiros_alternativos = identificar_apoios_em_df(df_roteiros_alternativos, pax_max_utilitario, pax_max_van, pax_max_micro)
 
-    df_roteiros_alternativos_5 = recalcular_horarios_menor_horario(df_roteiros_alternativos_5)
+        # Gerando rotas de apoios de rotas alternativas
 
-    df_roteiros_alternativos_5 = roteirizar_natal_maioria_praia_dos_artistas(df_roteiros_alternativos_5)
-    
-    # Identificando serviços das rotas alternativas que vão precisar de apoios
+        df_roteiros_alternativos, df_roteiros_apoios_alternativos = gerar_roteiros_apoio(df_roteiros_alternativos)
 
-    df_roteiros_alternativos = identificar_apoios_em_df(df_roteiros_alternativos, pax_max_utilitario, pax_max_van, pax_max_micro)
+        # Roteirizando carro principal desconsiderando os hoteis do apoio
 
-    # Gerando rotas de apoios de rotas alternativas
+        df_roteiros_alternativos = roteirizar_pos_apoios(df_roteiros_apoios_alternativos, df_roteiros_alternativos)
 
-    df_roteiros_alternativos, df_roteiros_apoios_alternativos = gerar_roteiros_apoio(df_roteiros_alternativos)
+        # Identificando serviços das rotas alternativas 2 que vão precisar de apoios
 
-    # Roteirizando carro principal desconsiderando os hoteis do apoio
+        df_roteiros_alternativos_2 = identificar_apoios_em_df(df_roteiros_alternativos_2, pax_max_utilitario, pax_max_van, pax_max_micro)
 
-    df_roteiros_alternativos = roteirizar_pos_apoios(df_roteiros_apoios_alternativos, df_roteiros_alternativos)
+        # Gerando rotas de apoios de rotas alternativas 2
 
-    # Identificando serviços das rotas alternativas 2 que vão precisar de apoios
+        df_roteiros_alternativos_2, df_roteiros_apoios_alternativos_2 = gerar_roteiros_apoio(df_roteiros_alternativos_2)
 
-    df_roteiros_alternativos_2 = identificar_apoios_em_df(df_roteiros_alternativos_2, pax_max_utilitario, pax_max_van, pax_max_micro)
+        # Roteirizando carro principal desconsiderando os hoteis do apoio
 
-    # Gerando rotas de apoios de rotas alternativas 2
+        df_roteiros_alternativos_2 = roteirizar_pos_apoios(df_roteiros_apoios_alternativos_2, df_roteiros_alternativos_2)
 
-    df_roteiros_alternativos_2, df_roteiros_apoios_alternativos_2 = gerar_roteiros_apoio(df_roteiros_alternativos_2)
+        # Identificando serviços das rotas alternativas 3 que vão precisar de apoios
 
-    # Roteirizando carro principal desconsiderando os hoteis do apoio
+        df_roteiros_alternativos_3 = identificar_apoios_em_df(df_roteiros_alternativos_3, pax_max_utilitario, pax_max_van, pax_max_micro)
 
-    df_roteiros_alternativos_2 = roteirizar_pos_apoios(df_roteiros_apoios_alternativos_2, df_roteiros_alternativos_2)
+        # Gerando rotas de apoios de rotas alternativas 3
 
-    # Identificando serviços das rotas alternativas 3 que vão precisar de apoios
+        df_roteiros_alternativos_3, df_roteiros_apoios_alternativos_3 = gerar_roteiros_apoio(df_roteiros_alternativos_3)
 
-    df_roteiros_alternativos_3 = identificar_apoios_em_df(df_roteiros_alternativos_3, pax_max_utilitario, pax_max_van, pax_max_micro)
+        # Roteirizando carro principal desconsiderando os hoteis do apoio
 
-    # Gerando rotas de apoios de rotas alternativas 3
+        df_roteiros_alternativos_3 = roteirizar_pos_apoios(df_roteiros_apoios_alternativos_3, df_roteiros_alternativos_3)
 
-    df_roteiros_alternativos_3, df_roteiros_apoios_alternativos_3 = gerar_roteiros_apoio(df_roteiros_alternativos_3)
+        # Gerando rotas de apoios de rotas alternativas 4
 
-    # Roteirizando carro principal desconsiderando os hoteis do apoio
+        df_roteiros_alternativos_4 = identificar_apoios_em_df_4(df_roteiros_alternativos_4, pax_max_utilitario, pax_max_van, pax_max_micro)
 
-    df_roteiros_alternativos_3 = roteirizar_pos_apoios(df_roteiros_apoios_alternativos_3, df_roteiros_alternativos_3)
+        # Gerando rotas de apoios de rotas alternativas 4
 
-    # Gerando rotas de apoios de rotas alternativas 4
+        df_roteiros_alternativos_4, df_roteiros_apoios_alternativos_4 = gerar_roteiros_apoio(df_roteiros_alternativos_4)
 
-    df_roteiros_alternativos_4 = identificar_apoios_em_df_4(df_roteiros_alternativos_4, pax_max_utilitario, pax_max_van, pax_max_micro)
+        # Roteirizando carro principal desconsiderando os hoteis do apoio
 
-    # Gerando rotas de apoios de rotas alternativas 4
+        df_roteiros_alternativos_4 = roteirizar_pos_apoios(df_roteiros_apoios_alternativos_4, df_roteiros_alternativos_4)
 
-    df_roteiros_alternativos_4, df_roteiros_apoios_alternativos_4 = gerar_roteiros_apoio(df_roteiros_alternativos_4)
+        # Gerando rotas de apoios de rotas alternativas 4
 
-    # Roteirizando carro principal desconsiderando os hoteis do apoio
+        df_roteiros_alternativos_5 = identificar_apoios_em_df(df_roteiros_alternativos_5, pax_max_utilitario, pax_max_van, pax_max_micro)
 
-    df_roteiros_alternativos_4 = roteirizar_pos_apoios(df_roteiros_apoios_alternativos_4, df_roteiros_alternativos_4)
+        # Gerando rotas de apoios de rotas alternativas 4
 
-    # Gerando rotas de apoios de rotas alternativas 4
+        df_roteiros_alternativos_5, df_roteiros_apoios_alternativos_5 = gerar_roteiros_apoio(df_roteiros_alternativos_5)
 
-    df_roteiros_alternativos_5 = identificar_apoios_em_df(df_roteiros_alternativos_5, pax_max_utilitario, pax_max_van, pax_max_micro)
+        # Roteirizando carro principal desconsiderando os hoteis do apoio
 
-    # Gerando rotas de apoios de rotas alternativas 4
+        df_roteiros_alternativos_5 = roteirizar_pos_apoios(df_roteiros_apoios_alternativos_5, df_roteiros_alternativos_5)
 
-    df_roteiros_alternativos_5, df_roteiros_apoios_alternativos_5 = gerar_roteiros_apoio(df_roteiros_alternativos_5)
+        # Roteirizando de forma invertida quando só tem hoteis até o Marsol
 
-    # Roteirizando carro principal desconsiderando os hoteis do apoio
+        if servico_roteiro=='OUT - Natal':
 
-    df_roteiros_alternativos_5 = roteirizar_pos_apoios(df_roteiros_apoios_alternativos_5, df_roteiros_alternativos_5)
+            df_router_filtrado_2 = roteirizar_natal_apenas_primeiros_hoteis(df_router_filtrado_2, sequencia_marsol)
 
-    # Roteirizando de forma invertida quando só tem hoteis até o Marsol
+            df_roteiros_alternativos = roteirizar_natal_apenas_primeiros_hoteis(df_roteiros_alternativos, sequencia_marsol)
 
-    if servico_roteiro=='OUT - Natal':
+            df_roteiros_alternativos_2 = roteirizar_natal_apenas_primeiros_hoteis(df_roteiros_alternativos_2, sequencia_marsol)
 
-        df_router_filtrado_2 = roteirizar_natal_apenas_primeiros_hoteis(df_router_filtrado_2, sequencia_marsol)
+            df_roteiros_alternativos_3 = roteirizar_natal_apenas_primeiros_hoteis(df_roteiros_alternativos_3, sequencia_marsol)
 
-        df_roteiros_alternativos = roteirizar_natal_apenas_primeiros_hoteis(df_roteiros_alternativos, sequencia_marsol)
+            df_roteiros_alternativos_4 = roteirizar_natal_apenas_primeiros_hoteis(df_roteiros_alternativos_4, sequencia_marsol)
 
-        df_roteiros_alternativos_2 = roteirizar_natal_apenas_primeiros_hoteis(df_roteiros_alternativos_2, sequencia_marsol)
+            df_roteiros_alternativos_5 = roteirizar_natal_apenas_primeiros_hoteis(df_roteiros_alternativos_5, sequencia_marsol)
 
-        df_roteiros_alternativos_3 = roteirizar_natal_apenas_primeiros_hoteis(df_roteiros_alternativos_3, sequencia_marsol)
+        df_roteiros_alternativos = verificar_rotas_identicas(df_router_filtrado_2, df_roteiros_alternativos)
 
-        df_roteiros_alternativos_4 = roteirizar_natal_apenas_primeiros_hoteis(df_roteiros_alternativos_4, sequencia_marsol)
+        df_roteiros_alternativos_2 = verificar_rotas_identicas(df_router_filtrado_2, df_roteiros_alternativos_2)
 
-        df_roteiros_alternativos_5 = roteirizar_natal_apenas_primeiros_hoteis(df_roteiros_alternativos_5, sequencia_marsol)
+        df_roteiros_alternativos_2 = verificar_rotas_identicas(df_roteiros_alternativos, df_roteiros_alternativos_2)
 
-    df_roteiros_alternativos = verificar_rotas_identicas(df_router_filtrado_2, df_roteiros_alternativos)
+        df_roteiros_alternativos_3 = verificar_rotas_identicas(df_router_filtrado_2, df_roteiros_alternativos_3)
 
-    df_roteiros_alternativos_2 = verificar_rotas_identicas(df_router_filtrado_2, df_roteiros_alternativos_2)
+        df_roteiros_alternativos_3 = verificar_rotas_identicas(df_roteiros_alternativos_2, df_roteiros_alternativos_3)
 
-    df_roteiros_alternativos_2 = verificar_rotas_identicas(df_roteiros_alternativos, df_roteiros_alternativos_2)
+        df_roteiros_alternativos_3 = verificar_rotas_identicas(df_roteiros_alternativos, df_roteiros_alternativos_3)
 
-    df_roteiros_alternativos_3 = verificar_rotas_identicas(df_router_filtrado_2, df_roteiros_alternativos_3)
+        df_roteiros_alternativos_4 = verificar_rotas_identicas(df_router_filtrado_2, df_roteiros_alternativos_4)
 
-    df_roteiros_alternativos_3 = verificar_rotas_identicas(df_roteiros_alternativos_2, df_roteiros_alternativos_3)
+        df_roteiros_alternativos_4 = verificar_rotas_identicas(df_roteiros_alternativos_3, df_roteiros_alternativos_4)
 
-    df_roteiros_alternativos_3 = verificar_rotas_identicas(df_roteiros_alternativos, df_roteiros_alternativos_3)
+        df_roteiros_alternativos_4 = verificar_rotas_identicas(df_roteiros_alternativos_2, df_roteiros_alternativos_4)
 
-    df_roteiros_alternativos_4 = verificar_rotas_identicas(df_router_filtrado_2, df_roteiros_alternativos_4)
+        df_roteiros_alternativos_4 = verificar_rotas_identicas(df_roteiros_alternativos, df_roteiros_alternativos_4)
 
-    df_roteiros_alternativos_4 = verificar_rotas_identicas(df_roteiros_alternativos_3, df_roteiros_alternativos_4)
+        df_roteiros_alternativos_5 = verificar_rotas_identicas(df_router_filtrado_2, df_roteiros_alternativos_5)
 
-    df_roteiros_alternativos_4 = verificar_rotas_identicas(df_roteiros_alternativos_2, df_roteiros_alternativos_4)
+        df_roteiros_alternativos_5 = verificar_rotas_identicas(df_roteiros_alternativos_4, df_roteiros_alternativos_5)
 
-    df_roteiros_alternativos_4 = verificar_rotas_identicas(df_roteiros_alternativos, df_roteiros_alternativos_4)
+        df_roteiros_alternativos_5 = verificar_rotas_identicas(df_roteiros_alternativos_3, df_roteiros_alternativos_5)
 
-    df_roteiros_alternativos_5 = verificar_rotas_identicas(df_router_filtrado_2, df_roteiros_alternativos_5)
+        df_roteiros_alternativos_5 = verificar_rotas_identicas(df_roteiros_alternativos_2, df_roteiros_alternativos_5)
 
-    df_roteiros_alternativos_5 = verificar_rotas_identicas(df_roteiros_alternativos_4, df_roteiros_alternativos_5)
+        df_roteiros_alternativos_5 = verificar_rotas_identicas(df_roteiros_alternativos, df_roteiros_alternativos_5)
 
-    df_roteiros_alternativos_5 = verificar_rotas_identicas(df_roteiros_alternativos_3, df_roteiros_alternativos_5)
+        # Plotando roteiros de cada carro
 
-    df_roteiros_alternativos_5 = verificar_rotas_identicas(df_roteiros_alternativos_2, df_roteiros_alternativos_5)
+        st.divider()
 
-    df_roteiros_alternativos_5 = verificar_rotas_identicas(df_roteiros_alternativos, df_roteiros_alternativos_5)
+        row_warning = st.columns(1)
 
-    # Plotando roteiros de cada carro
+        row3 = st.columns(3)
 
-    st.divider()
+        coluna = 0
+        
+        hora_execucao = datetime.now()
+        
+        hora_execucao_menos_3h = hora_execucao - timedelta(hours=3)
 
-    row_warning = st.columns(1)
+        hora_execucao = hora_execucao_menos_3h.strftime("%d-%m-%Y %Hh%Mm")
 
-    row3 = st.columns(3)
+        st.session_state.nome_html = f"{hora_execucao} {nome_html_ref}.html"
 
-    coluna = 0
-    
-    hora_execucao = datetime.now()
-    
-    hora_execucao_menos_3h = hora_execucao - timedelta(hours=3)
+        st.session_state.data_roteiro_ref = data_roteiro.strftime("%d/%m/%Y")
 
-    hora_execucao = hora_execucao_menos_3h.strftime("%d-%m-%Y %Hh%Mm")
+        st.session_state.df_hoteis_pax_max = df_hoteis_pax_max
 
-    st.session_state.nome_html = f"{hora_execucao} {nome_html_ref}.html"
+        st.session_state.df_router_filtrado_2 = df_router_filtrado_2
 
-    st.session_state.data_roteiro_ref = data_roteiro.strftime("%d/%m/%Y")
+        st.session_state.df_roteiros_alternativos = df_roteiros_alternativos
 
-    st.session_state.df_hoteis_pax_max = df_hoteis_pax_max
+        st.session_state.df_roteiros_alternativos_2 = df_roteiros_alternativos_2
 
-    st.session_state.df_router_filtrado_2 = df_router_filtrado_2
+        st.session_state.df_roteiros_alternativos_3 = df_roteiros_alternativos_3
 
-    st.session_state.df_roteiros_alternativos = df_roteiros_alternativos
+        st.session_state.df_roteiros_alternativos_4 = df_roteiros_alternativos_4
 
-    st.session_state.df_roteiros_alternativos_2 = df_roteiros_alternativos_2
+        st.session_state.df_roteiros_alternativos_5 = df_roteiros_alternativos_5
 
-    st.session_state.df_roteiros_alternativos_3 = df_roteiros_alternativos_3
+        st.session_state.df_roteiros_apoios = df_roteiros_apoios
 
-    st.session_state.df_roteiros_alternativos_4 = df_roteiros_alternativos_4
+        st.session_state.df_roteiros_apoios_alternativos = df_roteiros_apoios_alternativos
 
-    st.session_state.df_roteiros_alternativos_5 = df_roteiros_alternativos_5
+        st.session_state.df_roteiros_apoios_alternativos_2 = df_roteiros_apoios_alternativos_2
 
-    st.session_state.df_roteiros_apoios = df_roteiros_apoios
+        st.session_state.df_roteiros_apoios_alternativos_3 = df_roteiros_apoios_alternativos_3
 
-    st.session_state.df_roteiros_apoios_alternativos = df_roteiros_apoios_alternativos
+        st.session_state.df_roteiros_apoios_alternativos_4 = df_roteiros_apoios_alternativos_4
 
-    st.session_state.df_roteiros_apoios_alternativos_2 = df_roteiros_apoios_alternativos_2
-
-    st.session_state.df_roteiros_apoios_alternativos_3 = df_roteiros_apoios_alternativos_3
-
-    st.session_state.df_roteiros_apoios_alternativos_4 = df_roteiros_apoios_alternativos_4
-
-    st.session_state.df_roteiros_apoios_alternativos_5 = df_roteiros_apoios_alternativos_5
+        st.session_state.df_roteiros_apoios_alternativos_5 = df_roteiros_apoios_alternativos_5
 
     verificar_rotas_alternativas_ou_plotar_roteiros_com_apoio(df_roteiros_alternativos, row_warning, row3, coluna, df_hoteis_pax_max, df_router_filtrado_2, df_roteiros_apoios, 
                                                     df_roteiros_apoios_alternativos, st.session_state.df_juncao_voos, 
